@@ -1,3 +1,8 @@
+import { useState } from "react";
+import { FaGithub } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
+import { TriangleAlert } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,13 +13,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { FaGithub } from "react-icons/fa";
-import { FcGoogle } from "react-icons/fc";
-import { useState } from "react";
+
 import { useAuthActions } from "@convex-dev/auth/react";
 
 import { SignInFlow } from "../types";
-import { TriangleAlert } from "lucide-react";
 
 interface SignInCardProps {
   setState: (state: SignInFlow) => void;
