@@ -12,13 +12,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useCreatWorkspaceModal } from "@/features/workspaces/store/use-create-workspace-modal";
+import { useCreateWorkspaceModal } from "@/features/workspaces/store/use-create-workspace-modal";
 import { useRouter } from "next/navigation";
 
 export const WorkspaceSwitcher = () => {
   const router = useRouter();
   const workspaceId = useWorkspaceId();
-  const [_open, setOpen] = useCreatWorkspaceModal();
+  const [_open, setOpen] = useCreateWorkspaceModal();
 
   const { data: workspace, isLoading: workspacesLoading } = useGetWorkspace({
     id: workspaceId,

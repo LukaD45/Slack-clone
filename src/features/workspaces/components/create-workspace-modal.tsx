@@ -11,12 +11,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-import { useCreatWorkspaceModal } from "../store/use-create-workspace-modal";
+import { useCreateWorkspaceModal } from "../store/use-create-workspace-modal";
 import { useCreateWorkspace } from "../api/use-create-workspace";
 
 export const CreateWorkspaceModal = () => {
   const router = useRouter();
-  const [open, setOpen] = useCreatWorkspaceModal();
+  const [open, setOpen] = useCreateWorkspaceModal();
   const [name, setName] = useState("");
 
   const { mutate, isPending } = useCreateWorkspace();
