@@ -4,12 +4,16 @@ import { MdSend } from "react-icons/md";
 import { ImageIcon, Smile } from "lucide-react";
 import { PiTextAa } from "react-icons/pi";
 
-import "quill/dist/quill.snow.css";
-
 import { Hint } from "./hint";
 import { Button } from "./ui/button";
 
-const Editor = () => {
+import "quill/dist/quill.snow.css";
+
+interface EditorProps {
+  variant?: "create" | "update";
+}
+
+const Editor = ({ variant = "create" }: EditorProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -58,25 +62,48 @@ const Editor = () => {
               <Smile className="size-4" />
             </Button>
           </Hint>
-          <Hint label="Image">
+          {variant === "create" && (
+            <Hint label="Image">
+              <Button
+                disabled={false}
+                size="iconSm"
+                variant="ghost"
+                onClick={() => {}}
+              >
+                <ImageIcon className="size-4" />
+              </Button>
+            </Hint>
+          )}
+          {variant === "update" && (
+            <div className="ml-auto flex items-center gap-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {}}
+                disabled={false}
+              >
+                Cancel
+              </Button>
+              <Button
+                className=" bg-[#007a5a] hover:bg-[#007a5a]/80 text-white"
+                size="sm"
+                onClick={() => {}}
+                disabled={false}
+              >
+                Save
+              </Button>
+            </div>
+          )}
+          {variant === "create" && (
             <Button
               disabled={false}
-              size="iconSm"
-              variant="ghost"
               onClick={() => {}}
+              size="iconSm"
+              className="ml-auto bg-[#007a5a] hover:bg-[#007a5a]/80 text-white"
             >
-              <ImageIcon className="size-4" />
+              <MdSend className="size-4" />
             </Button>
-          </Hint>
-
-          <Button
-            disabled={false}
-            onClick={() => {}}
-            size="iconSm"
-            className="ml-auto bg-[#007a5a] hover:bg-[#007a5a]/80 text-white"
-          >
-            <MdSend className="size-4" />
-          </Button>
+          )}
         </div>
       </div>
       <div className="p-2 text-[10px] text-muted-foreground flex justify-end">
