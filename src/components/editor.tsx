@@ -16,6 +16,7 @@ import { Button } from "./ui/button";
 import "quill/dist/quill.snow.css";
 import { Delta, Op } from "quill/core";
 import { cn } from "@/lib/utils";
+import { list } from "postcss";
 
 type EditorValue = {
   image: File | null;
@@ -68,6 +69,32 @@ const Editor = ({
     const options: QuillOptions = {
       theme: "snow",
       placeholder: placeholderRef.current,
+      modules: {
+        toolbar: [
+          ["bold", "italic", "strike"],
+          ["link"],
+          [{ list: "ordered" }, { list: "bullet" }],
+        ],
+
+        keyboard: {
+          bindings: {
+            enter: {
+              key: "Enter",
+              handler: () => {
+                //TODO: Submit form
+                return;
+              },
+            },
+            shift_enter: {
+              key: "Enter",
+              shiftKey: true,
+              handler: () => {
+                quill.insertText(quill.getSelection()?.index || 0, "\n");
+              },
+            },
+          },
+        },
+      },
     };
 
     const quill = new Quill(editorContainer, options);
