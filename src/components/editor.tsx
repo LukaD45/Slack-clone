@@ -1,3 +1,7 @@
+import { Delta, Op } from "quill/core";
+import { MdSend } from "react-icons/md";
+import { PiTextAa } from "react-icons/pi";
+import { ImageIcon, Smile } from "lucide-react";
 import Quill, { type QuillOptions } from "quill";
 import {
   MutableRefObject,
@@ -6,17 +10,14 @@ import {
   useRef,
   useState,
 } from "react";
-import { MdSend } from "react-icons/md";
-import { ImageIcon, Smile } from "lucide-react";
-import { PiTextAa } from "react-icons/pi";
+
+import { cn } from "@/lib/utils";
 
 import { Hint } from "./hint";
 import { Button } from "./ui/button";
+import { EmojiPopover } from "./emoji-popover";
 
 import "quill/dist/quill.snow.css";
-import { Delta, Op } from "quill/core";
-import { cn } from "@/lib/utils";
-import { list } from "postcss";
 
 type EditorValue = {
   image: File | null;
@@ -136,6 +137,12 @@ const Editor = ({
     }
   };
 
+  const onEmojiSelect = (emoji: any) => {
+    const quill = quillRef.current;
+
+    quill?.insertText(quill?.getSelection()?.index || 0, emoji.native);
+  };
+
   const isEmpty = text.replace(/<(.|\n)*?>/g, "").trim().length === 0;
 
   return (
@@ -156,16 +163,11 @@ const Editor = ({
             </Button>
           </Hint>
 
-          <Hint label="Emoji">
-            <Button
-              disabled={disabled}
-              size="iconSm"
-              variant="ghost"
-              onClick={() => {}}
-            >
+          <EmojiPopover onEmojiSelect={onEmojiSelect}>
+            <Button disabled={disabled} size="iconSm" variant="ghost">
               <Smile className="size-4" />
             </Button>
-          </Hint>
+          </EmojiPopover>
           {variant === "create" && (
             <Hint label="Image">
               <Button
@@ -215,11 +217,18 @@ const Editor = ({
           )}
         </div>
       </div>
-      <div className="p-2 text-[10px] text-muted-foreground flex justify-end">
-        <p>
-          <strong>Shift + return</strong> to add a new line
-        </p>
-      </div>
+      {variant === "create" && (
+        <div
+          className={cn(
+            "p-2 text-[10px] text-muted-foreground flex justify-end opacity-0 transition",
+            !isEmpty && "opacity-100"
+          )}
+        >
+          <p>
+            <strong>Shift + return</strong> to add a new line
+          </p>
+        </div>
+      )}
     </div>
   );
 };
