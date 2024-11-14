@@ -107,49 +107,69 @@ export const get = query({
 
     return {
       ...results,
-      page: await Promise.all(
-        results.page.map(async (message) => {
-          const member = await populateMember(ctx, message.memberId);
-          const user = member ? await populateUser(ctx, member.userId) : null;
+      page: (
+        await Promise.all(
+          results.page.map(async (message) => {
+            const member = await populateMember(ctx, message.memberId);
+            const user = member ? await populateUser(ctx, member.userId) : null;
 
-          if (!member || !user) {
-            return null;
-          }
+            if (!member || !user) {
+              return null;
+            }
 
-          const reactions = await populateReactions(ctx, message._id);
-          const thread = await populateThread(ctx, message._id);
-          const image = message.image
-            ? await ctx.storage.getUrl(message.image)
-            : undefined;
+            const reactions = await populateReactions(ctx, message._id);
+            const thread = await populateThread(ctx, message._id);
+            const image = message.image
+              ? await ctx.storage.getUrl(message.image)
+              : undefined;
 
-          const reactionsWithCounts = reactions.map((reaction) => {
-            return {
-              ...reaction,
-              count: reactions.filter((r) => r.value === reaction.value).length,
-            };
-          });
+            const reactionsWithCounts = reactions.map((reaction) => {
+              return {
+                ...reaction,
+                count: reactions.filter((r) => r.value === reaction.value)
+                  .length,
+              };
+            });
 
-          const dedupedReactions = reactionsWithCounts.reduce(
-            (acc, reaction) => {
-              const existingReaction = acc.find(
-                (r) => r.value === reaction.value
-              );
-
-              if (existingReaction) {
-                existingReaction.memberIds = Array.from(
-                  new Set([...existingReaction.memberIds, reaction.memberId])
+            const dedupedReactions = reactionsWithCounts.reduce(
+              (acc, reaction) => {
+                const existingReaction = acc.find(
+                  (r) => r.value === reaction.value
                 );
-              } else {
-                acc.push({ ...reaction, memberIds: [reaction.memberId] });
-              }
-              return acc;
-            },
-            [] as (Doc<"reactions"> & {
-              count: number;
-              memberIds: Id<"members">[];
-            })[]
-          );
-        })
+
+                if (existingReaction) {
+                  existingReaction.memberIds = Array.from(
+                    new Set([...existingReaction.memberIds, reaction.memberId])
+                  );
+                } else {
+                  acc.push({ ...reaction, memberIds: [reaction.memberId] });
+                }
+                return acc;
+              },
+              [] as (Doc<"reactions"> & {
+                count: number;
+                memberIds: Id<"members">[];
+              })[]
+            );
+
+            const reactionsWithoutMemberIdProperty = dedupedReactions.map(
+              ({ memberId, ...rest }) => rest
+            );
+
+            return {
+              ...message,
+              image,
+              member,
+              user,
+              reactions: reactionsWithoutMemberIdProperty,
+              threadCount: thread.count,
+              threadImage: thread.image,
+              threadTimestamp: thread.timestamp,
+            };
+          })
+        )
+      ).filter(
+        (message): message is NonNullable<typeof message> => message !== null
       ),
     };
   },
@@ -197,7 +217,6 @@ export const create = mutation({
       workspaceId: args.workspaceId,
       conversationId: _conversationId,
       parentMessageId: args.parentMessageId,
-      updatedAt: Date.now(),
     });
     return messageId;
   },
