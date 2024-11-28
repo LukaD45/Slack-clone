@@ -3,7 +3,7 @@ import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 
 interface UseGetMemberProps {
-  id: Id<"workspaces">;
+  id: Id<"members">;
 }
 
 export const useGetMember = ({ id }: UseGetMemberProps) => {

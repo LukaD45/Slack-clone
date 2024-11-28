@@ -38,7 +38,7 @@ export const getById = query({
       return null;
     }
 
-    return { ...member, userId };
+    return { ...member, user };
   },
 });
 
