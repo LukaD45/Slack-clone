@@ -1,6 +1,11 @@
+import { useState } from "react";
 import { AlertTriangle, Loader, XIcon } from "lucide-react";
 
+import { useCurrentMember } from "@/features/members/api/use-current-member";
+import { useWorkspaceId } from "@/hooks/use-workspace-id";
+
 import { Button } from "@/components/ui/button";
+import { Message } from "@/components/message";
 
 import { Id } from "../../../../convex/_generated/dataModel";
 import { useGetmessage } from "../api/use-get-message";
@@ -11,6 +16,10 @@ interface ThreadProps {
 }
 
 export const Thread = ({ messageId, onClose }: ThreadProps) => {
+  const workspaceId = useWorkspaceId();
+
+  const [editingId, setEditingId] = useState<Id<"messages"> | null>(null);
+  const { data: currentMember } = useCurrentMember({ workspaceId });
   const { data: message, isLoading: loadingMessage } = useGetmessage({
     id: messageId,
   });
@@ -56,7 +65,23 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
           <XIcon className="size-5 stroke-[1.5]" />
         </Button>
       </div>
-      <div>{JSON.stringify(message)}</div>
+      <div>
+        <Message
+          hideThreadButton
+          memberId={message.memberId}
+          authorImage={message.user.image}
+          authorName={message.user.name}
+          isAuthor={message.memberId === currentMember?._id}
+          body={message.body}
+          image={message.image}
+          createdAt={message._creationTime}
+          updatedAt={message.updatedAt}
+          id={message._id}
+          reactions={message.reactions}
+          isEditing={editingId === messageId}
+          setEditingId={setEditingId}
+        />
+      </div>
     </div>
   );
 };
