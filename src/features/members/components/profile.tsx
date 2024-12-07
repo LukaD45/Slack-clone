@@ -21,6 +21,13 @@ import { useRemoveMember } from "../api/use-remove-member";
 import { useCurrentMember } from "../api/use-current-member";
 
 import { Id } from "../../../../convex/_generated/dataModel";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface ProfileProps {
   memberId: Id<"members">;
@@ -172,10 +179,29 @@ export const Profile = ({ memberId, onClose }: ProfileProps) => {
           {currentMember?.role === "admin" &&
           currentMember?._id !== memberId ? (
             <div className="flex items-center gap-2 mt-4">
-              <Button variant="outline" className="w-full capitalize">
-                {member.role}
-                <ChevronDownIcon className="size-4 ml-2" />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="w-full capitalize">
+                    {member.role}
+                    <ChevronDownIcon className="size-4 ml-2" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-full ">
+                  <DropdownMenuRadioGroup
+                    defaultValue={member.role}
+                    onValueChange={(role) =>
+                      onUpdate(role as "admin" | "member")
+                    }
+                  >
+                    <DropdownMenuRadioItem value="admin">
+                      Admin
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="member">
+                      Member
+                    </DropdownMenuRadioItem>
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Button onClick={onRemove} variant="outline" className="w-full">
                 Remove
               </Button>
