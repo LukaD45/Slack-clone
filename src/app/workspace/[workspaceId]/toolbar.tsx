@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Info, Search } from "lucide-react";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { useWorkspaceId } from "@/hooks/use-workspace-id";
@@ -19,14 +20,26 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command";
+import { useRouter } from "next/navigation";
 
 export const Toolbar = () => {
   const workspaceId = useWorkspaceId();
+  const router = useRouter();
 
   const { data } = useGetWorkspace({ id: workspaceId });
   const [open, setOpen] = useState(false);
   const { data: channels } = useGetChannels({ workspaceId });
   const { data: members } = useGetMembers({ workspaceId });
+
+  const onChannelClick = (channelId: string) => {
+    setOpen(false);
+    router.push(`/workspace/${workspaceId}/channel/${channelId}`);
+  };
+
+  const onMemberClick = (memberId: string) => {
+    setOpen(false);
+    router.push(`/workspace/${workspaceId}/channel/${memberId}`);
+  };
 
   return (
     <nav className="bg-[#481349] flex items-center justify-between h-10 p-1.5 ">
@@ -46,13 +59,17 @@ export const Toolbar = () => {
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup heading="Channels">
               {channels?.map((channel) => (
-                <CommandItem>{channel.name}</CommandItem>
+                <CommandItem onSelect={() => onChannelClick(channel._id)}>
+                  {channel.name}
+                </CommandItem>
               ))}
             </CommandGroup>
             <CommandSeparator />
             <CommandGroup heading="Members">
               {members?.map((member) => (
-                <CommandItem>{member.user.name}</CommandItem>
+                <CommandItem onSelect={() => onMemberClick(member._id)}>
+                  {member.user.name}
+                </CommandItem>
               ))}
             </CommandGroup>
           </CommandList>
